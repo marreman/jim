@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Html exposing (Html)
 import Element
+import Element.Attributes
 import Style
 import Style.Color
 import Color
@@ -42,7 +43,9 @@ update msg model =
 
 
 type Class
-    = Main
+    = None
+    | Main
+    | Header
 
 
 stylesheet =
@@ -50,14 +53,32 @@ stylesheet =
         [ Style.style Main
             [ Style.Color.text Color.grey
             ]
+        , Style.style Header
+            [ Style.Color.background (Color.rgb 39 48 67)
+            , Style.Color.text (Color.white)
+            ]
         ]
 
 
 view : Model -> Html Msg
 view model =
     Element.layout stylesheet <|
-        Element.el Main
+        Element.column Main
             []
+            [ viewHeader ]
+
+
+viewHeader =
+    Element.el Header
+        [ Element.Attributes.height (Element.Attributes.px 50)
+        , Element.Attributes.width (Element.Attributes.fill)
+        ]
+        (Element.el None
+            [ Element.Attributes.center
+            , Element.Attributes.verticalCenter
+            ]
             (Element.text
                 "Welcome to Jim!"
             )
+        )
+        |> Element.screen
