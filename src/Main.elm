@@ -3,6 +3,8 @@ module Main exposing (..)
 import Html exposing (Html)
 import Element
 import Style
+import Style.Color
+import Color
 
 
 main : Program Never Model Msg
@@ -39,12 +41,23 @@ update msg model =
     ( model, Cmd.none )
 
 
+type Class
+    = Main
+
+
 stylesheet =
     Style.styleSheet
-        []
+        [ Style.style Main
+            [ Style.Color.text Color.grey
+            ]
+        ]
 
 
 view : Model -> Html Msg
 view model =
     Element.layout stylesheet <|
-        Element.text "Welcome to Jim!"
+        Element.el Main
+            []
+            (Element.text
+                "Welcome to Jim!"
+            )
