@@ -1,6 +1,8 @@
 module Main exposing (..)
 
 import Html exposing (Html)
+import Element
+import Style
 
 
 main : Program Never Model Msg
@@ -14,12 +16,18 @@ main =
 
 
 type alias Model =
-    {}
+    { exercises : List String }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model, Cmd.none )
+    ( { exercises =
+            [ "Knäböj"
+            , "Marklyft"
+            ]
+      }
+    , Cmd.none
+    )
 
 
 type Msg
@@ -31,6 +39,12 @@ update msg model =
     ( model, Cmd.none )
 
 
+stylesheet =
+    Style.styleSheet
+        []
+
+
 view : Model -> Html Msg
 view model =
-    Html.text "Welcome to Jim!"
+    Element.layout stylesheet <|
+        Element.text "Welcome to Jim!"
