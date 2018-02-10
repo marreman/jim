@@ -5,6 +5,7 @@ import Element
 import Element.Attributes
 import Style
 import Style.Color
+import Style.Font
 import Color
 
 
@@ -51,11 +52,13 @@ type Class
 stylesheet =
     Style.styleSheet
         [ Style.style Main
-            [ Style.Color.text Color.grey
-            ]
+            []
         , Style.style Header
             [ Style.Color.background (Color.rgb 39 48 67)
             , Style.Color.text (Color.white)
+            , Style.Font.typeface [ Style.Font.font "Barlow Condensed" ]
+            , Style.Font.size 20
+            , Style.Font.uppercase
             ]
         ]
 
@@ -70,7 +73,7 @@ view model =
 
 viewHeader =
     Element.el Header
-        [ Element.Attributes.height (Element.Attributes.px 50)
+        [ Element.Attributes.height (Element.Attributes.px 60)
         , Element.Attributes.width (Element.Attributes.fill)
         ]
         (Element.el None
@@ -78,7 +81,7 @@ viewHeader =
             , Element.Attributes.verticalCenter
             ]
             (Element.text
-                "Welcome to Jim!"
+                "Övningar"
             )
         )
         |> Element.screen
