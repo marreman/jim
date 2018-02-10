@@ -1,0 +1,24 @@
+{
+  "name": "jim",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "elm-live src/Main.elm --output=public/elm.js --dir=public",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marreman/jim.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marreman/jim/issues"
+  },
+  "homepage": "https://github.com/marreman/jim#readme",
+  "devDependencies": {
+    "elm-live": "^2.7.5"
+  }
+}
