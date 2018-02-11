@@ -28,18 +28,15 @@ type alias Model =
 
 
 type Page
-    = Exercises PageInfo
-    | Exercise PageInfo
-
-
-type alias PageInfo =
-    { title : String
-    }
+    = Exercises
+    | Workouts
+    | StopWatch
+    | Exercise
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { currentPage = Exercises { title = "Övningar" }
+    ( { currentPage = Exercises
       , exercises =
             [ "Knäböj"
             , "Marklyft"
@@ -73,7 +70,8 @@ update msg model =
 type Class
     = None
     | Header
-    | Body
+    | TabBar
+    | TabSelected
     | ListItem
 
 
@@ -86,8 +84,16 @@ stylesheet =
             , Font.size 22
             , Font.uppercase
             ]
-        , style Body
-            []
+        , style TabBar
+            [ Color.background (Color.grey)
+            , Font.typeface [ Font.font "Barlow Condensed" ]
+            , Font.size 22
+            , Font.uppercase
+            ]
+        , style TabSelected
+            [ Color.background (Color.rgb 39 48 67)
+            , Color.text Color.white
+            ]
         , style ListItem
             [ Font.typeface [ Font.font "Barlow Condensed" ]
             , Font.size 20
@@ -102,14 +108,26 @@ view model =
     let
         views =
             case model.currentPage of
-                Exercises info ->
-                    [ viewHeader info
+                Exercises ->
+                    [ viewHeader "Övningar"
                     , viewBody model
+                    , viewTabBar model
                     ]
 
-                Exercise info ->
-                    [ viewHeader info
+                Workouts ->
+                    [ viewHeader "Pass"
+                    , viewTabBar model
+                    ]
+
+                StopWatch ->
+                    [ viewHeader "Stoppur"
+                    , viewTabBar model
+                    ]
+
+                Exercise ->
+                    [ viewHeader "Övning"
                     , viewBody model
+                    , viewTabBar model
                     ]
     in
         El.layout stylesheet <|
@@ -125,15 +143,15 @@ viewBody model =
             El.text item
                 |> El.el ListItem
                     [ At.padding 15
-                    , onClick (ChangePage (Exercise { title = item }))
+                    , onClick (ChangePage Exercise)
                     ]
     in
         List.map viewItem model.exercises
-            |> El.column Body [ At.paddingTop 60 ]
+            |> El.column None [ At.paddingTop 60, At.paddingBottom 60 ]
 
 
-viewHeader : PageInfo -> El.Element Class b c
-viewHeader info =
+viewHeader : String -> El.Element Class b c
+viewHeader headerText =
     El.el Header
         [ At.height (At.px 60)
         , At.width At.fill
@@ -142,8 +160,42 @@ viewHeader info =
             [ At.center
             , At.verticalCenter
             ]
-            (El.text
-                info.title
-            )
+            (El.text headerText)
         )
         |> El.screen
+
+
+viewTabBar : Model -> El.Element Class b Msg
+viewTabBar model =
+    El.el TabBar
+        [ At.height (At.px 60)
+        , At.width At.fill
+        , At.alignBottom
+        ]
+        (El.row None
+            [ At.height At.fill ]
+            [ viewTab "Övningar" Exercises model.currentPage
+            , viewTab "Pass" Workouts model.currentPage
+            , viewTab "Stoppur" StopWatch model.currentPage
+            ]
+        )
+        |> El.screen
+
+
+viewTab : String -> Page -> Page -> El.Element Class b Msg
+viewTab title thisPage currentPage =
+    El.el
+        (if thisPage == currentPage then
+            TabSelected
+         else
+            None
+        )
+        [ At.width At.fill
+        , onClick (ChangePage thisPage)
+        ]
+        (El.el None
+            [ At.center
+            , At.verticalCenter
+            ]
+            (El.text title)
+        )
