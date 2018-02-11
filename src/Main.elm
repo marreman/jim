@@ -2,8 +2,8 @@ module Main exposing (..)
 
 import Html exposing (Html)
 import Element.Events exposing (onClick)
-import Element as El
-import Element.Attributes as At
+import Element exposing (..)
+import Element.Attributes as Attributes exposing (..)
 import Style exposing (..)
 import Style.Color as Color
 import Style.Font as Font
@@ -67,7 +67,7 @@ update msg model =
             ( { model | currentPage = page }, Cmd.none )
 
 
-type Class
+type StyleId
     = None
     | Header
     | TabBar
@@ -75,6 +75,7 @@ type Class
     | ListItem
 
 
+stylesheet : StyleSheet StyleId a
 stylesheet =
     styleSheet
         [ style Header
@@ -130,72 +131,72 @@ view model =
                     , viewTabBar model
                     ]
     in
-        El.layout stylesheet <|
-            El.column None
+        layout stylesheet <|
+            column None
                 []
                 views
 
 
-viewBody : Model -> El.Element Class b Msg
+viewBody : Model -> Element StyleId b Msg
 viewBody model =
     let
         viewItem item =
-            El.text item
-                |> El.el ListItem
-                    [ At.padding 15
+            text item
+                |> el ListItem
+                    [ padding 15
                     , onClick (ChangePage Exercise)
                     ]
     in
         List.map viewItem model.exercises
-            |> El.column None [ At.paddingTop 60, At.paddingBottom 60 ]
+            |> column None [ paddingTop 60, paddingBottom 60 ]
 
 
-viewHeader : String -> El.Element Class b c
+viewHeader : String -> Element StyleId b c
 viewHeader headerText =
-    El.el Header
-        [ At.height (At.px 60)
-        , At.width At.fill
+    el Header
+        [ height (px 60)
+        , width fill
         ]
-        (El.el None
-            [ At.center
-            , At.verticalCenter
+        (el None
+            [ center
+            , verticalCenter
             ]
-            (El.text headerText)
+            (text headerText)
         )
-        |> El.screen
+        |> screen
 
 
-viewTabBar : Model -> El.Element Class b Msg
+viewTabBar : Model -> Element StyleId b Msg
 viewTabBar model =
-    El.el TabBar
-        [ At.height (At.px 60)
-        , At.width At.fill
-        , At.alignBottom
+    el TabBar
+        [ height (px 60)
+        , width fill
+        , alignBottom
         ]
-        (El.row None
-            [ At.height At.fill ]
+        (row None
+            [ height fill ]
             [ viewTab "Övningar" Exercises model.currentPage
             , viewTab "Pass" Workouts model.currentPage
             , viewTab "Stoppur" StopWatch model.currentPage
             ]
         )
-        |> El.screen
+        |> screen
 
 
-viewTab : String -> Page -> Page -> El.Element Class b Msg
+viewTab : String -> Page -> Page -> Element StyleId b Msg
 viewTab title thisPage currentPage =
-    El.el
+    el
         (if thisPage == currentPage then
             TabSelected
          else
             None
         )
-        [ At.width At.fill
+        [ width fill
         , onClick (ChangePage thisPage)
         ]
-        (El.el None
-            [ At.center
-            , At.verticalCenter
+        (el None
+            [ center
+            , verticalCenter
             ]
-            (El.text title)
+            (text title)
         )
