@@ -115,7 +115,7 @@ viewList model =
 
 viewHeader : String -> Html Msg
 viewHeader headerText =
-    text headerText
+    h1 [] [ text headerText ]
 
 
 viewTabBar : Model -> Html Msg
