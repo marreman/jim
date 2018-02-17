@@ -24,6 +24,7 @@ init =
 type Msg
     = Tick Time
     | Start
+    | Reset
 
 
 update : Msg -> Model -> Model
@@ -35,6 +36,9 @@ update msg model =
         Start ->
             { model | state = Running (model.currentTime) }
 
+        Reset ->
+            { model | state = NotRunning }
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -45,10 +49,14 @@ view : Model -> Html Msg
 view model =
     div []
         [ viewTime model
-        , button [ onClick Start ] [ text "Start" ]
+        , if model.state == NotRunning then
+            button [ onClick Start ] [ text "Start" ]
+          else
+            button [ onClick Reset ] [ text "Reset" ]
         ]
 
 
+viewTime : Model -> Html Msg
 viewTime model =
     text <|
         case model.state of
