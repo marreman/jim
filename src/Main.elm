@@ -1,17 +1,8 @@
 module Main exposing (..)
 
-import Html exposing (Html)
-import Element.Events exposing (onClick)
-import Element exposing (..)
-import Element.Attributes as Attributes exposing (..)
-import Style exposing (..)
-import Style.Color as Color
-import Style.Font as Font
-import Style.Border as Border
-import Style.Sheet
-import Color
+import Html exposing (..)
+import Html.Events exposing (onClick)
 import StopWatch
-import StyleId exposing (..)
 
 
 main : Program Never Model Msg
@@ -75,36 +66,6 @@ subscriptions model =
     Sub.map StopWatchMsg (StopWatch.subscriptions model.stopWatch)
 
 
-stylesheet : StyleSheet StyleId a
-stylesheet =
-    styleSheet <|
-        [ style Header
-            [ Color.background (Color.rgb 39 48 67)
-            , Color.text (Color.white)
-            , Font.typeface [ Font.font "Barlow Condensed" ]
-            , Font.size 22
-            , Font.uppercase
-            ]
-        , style TabBar
-            [ Color.background (Color.grey)
-            , Font.typeface [ Font.font "Barlow Condensed" ]
-            , Font.size 22
-            , Font.uppercase
-            ]
-        , style TabSelected
-            [ Color.background (Color.rgb 39 48 67)
-            , Color.text Color.white
-            ]
-        , style ListItem
-            [ Font.typeface [ Font.font "Barlow Condensed" ]
-            , Font.size 20
-            , Border.bottom 1
-            , Color.border (Color.rgb 230 230 230)
-            ]
-        ]
-            ++ StopWatch.styles
-
-
 view : Model -> Html Msg
 view model =
     let
@@ -124,7 +85,7 @@ view model =
                 StopWatch ->
                     [ viewHeader "Stoppur"
                     , viewBody <|
-                        Element.map StopWatchMsg
+                        Html.map StopWatchMsg
                             (StopWatch.view model.stopWatch)
                     , viewTabBar model
                     ]
@@ -134,77 +95,38 @@ view model =
                     , viewTabBar model
                     ]
     in
-        layout stylesheet <|
-            column None
-                [ height fill ]
-                views
+        div [] views
 
 
-viewBody : Element StyleId b Msg -> Element StyleId b Msg
-viewBody =
-    el None [ height fill, paddingTop 60, paddingBottom 60 ]
+viewBody : Html Msg -> Html Msg
+viewBody contents =
+    div [] [ contents ]
 
 
-viewList : Model -> Element StyleId b Msg
+viewList : Model -> Html Msg
 viewList model =
     let
         viewItem item =
-            text item
-                |> el ListItem
-                    [ padding 15
-                    , onClick (ChangePage Exercise)
-                    ]
+            div [] [ text item ]
     in
-        column None [] <|
+        div [] <|
             List.map viewItem model.exercises
 
 
-viewHeader : String -> Element StyleId b c
+viewHeader : String -> Html Msg
 viewHeader headerText =
-    el Header
-        [ height (px 60)
-        , width fill
-        ]
-        (el None
-            [ center
-            , verticalCenter
-            ]
-            (text headerText)
-        )
-        |> screen
+    text headerText
 
 
-viewTabBar : Model -> Element StyleId b Msg
+viewTabBar : Model -> Html Msg
 viewTabBar model =
-    el TabBar
-        [ height (px 60)
-        , width fill
-        , alignBottom
+    div []
+        [ viewTab "Övningar" Exercises model.currentPage
+        , viewTab "Pass" Workouts model.currentPage
+        , viewTab "Stoppur" StopWatch model.currentPage
         ]
-        (row None
-            [ height fill ]
-            [ viewTab "Övningar" Exercises model.currentPage
-            , viewTab "Pass" Workouts model.currentPage
-            , viewTab "Stoppur" StopWatch model.currentPage
-            ]
-        )
-        |> screen
 
 
-viewTab : String -> Page -> Page -> Element StyleId b Msg
+viewTab : String -> Page -> Page -> Html Msg
 viewTab title thisPage currentPage =
-    el
-        (if thisPage == currentPage then
-            TabSelected
-         else
-            None
-        )
-        [ width fill
-        , onClick (ChangePage thisPage)
-        ]
-        (el None
-            [ center
-            , verticalCenter
-            ]
-            (text title)
-        )
+    button [ onClick (ChangePage thisPage) ] [ text title ]

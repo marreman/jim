@@ -1,14 +1,8 @@
-module StopWatch exposing (init, Model, Msg, update, subscriptions, view, styles)
+module StopWatch exposing (..)
 
-import Element exposing (..)
-import Element.Attributes exposing (..)
-import Element.Events exposing (onClick)
-import Style exposing (..)
-import Style.Color as Color
-import Style.Font as Font
-import Color
+import Html exposing (..)
+import Html.Events exposing (onClick)
 import Time exposing (Time)
-import StyleId exposing (..)
 
 
 type alias Model =
@@ -47,27 +41,11 @@ subscriptions model =
     Time.every (100 * Time.millisecond) Tick
 
 
-styles =
-    [ style StopWatch
-        [ Font.typeface [ Font.font "Barlow Condensed" ]
-        , Font.size 32
-        ]
-    ]
-
-
-view : Model -> Element StyleId b Msg
+view : Model -> Html Msg
 view model =
-    column StopWatch
-        [ height fill
-        , width fill
-        , onClick Start
-        , center
-        , verticalCenter
-        ]
-        [ el Time [ padding 60 ] (viewTime model)
-        , button None
-            [ onClick Start ]
-            (text "Start")
+    div []
+        [ viewTime model
+        , button [ onClick Start ] [ text "Start" ]
         ]
 
 
