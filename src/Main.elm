@@ -23,7 +23,8 @@ type alias Model =
 
 
 type Page
-    = Exercises
+    = ExerciseList
+    | ExerciseCreate
     | Workouts
     | StopWatch
     | Exercise
@@ -31,7 +32,7 @@ type Page
 
 init : ( Model, Cmd Msg )
 init =
-    ( { currentPage = StopWatch
+    ( { currentPage = ExerciseList
       , exercises =
             [ "Knäböj"
             , "Marklyft"
@@ -45,6 +46,7 @@ init =
 type Msg
     = ChangePage Page
     | StopWatchMsg StopWatch.Msg
+    | CreateExercise
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -60,6 +62,9 @@ update msg model =
             , Cmd.none
             )
 
+        CreateExercise ->
+            ( model, Cmd.none )
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -71,9 +76,15 @@ view model =
     let
         views =
             case model.currentPage of
-                Exercises ->
+                ExerciseList ->
                     [ viewHeader "Övningar"
-                    , viewBody (viewList model)
+                    , viewBody (viewExercises model)
+                    , viewTabBar model
+                    ]
+
+                ExerciseCreate ->
+                    [ viewHeader "Skapa Övning"
+                    , viewBody (viewExerciseCreate model)
                     , viewTabBar model
                     ]
 
@@ -103,13 +114,28 @@ viewBody contents =
     div [] [ contents ]
 
 
+viewExerciseCreate : Model -> Html Msg
+viewExerciseCreate model =
+    form []
+        [ input [] []
+        ]
+
+
+viewExercises : Model -> Html Msg
+viewExercises model =
+    div []
+        [ viewList model
+        , button [ onClick (ChangePage ExerciseCreate) ] [ text "Create exercise" ]
+        ]
+
+
 viewList : Model -> Html Msg
 viewList model =
     let
         viewItem item =
-            div [] [ text item ]
+            li [] [ text item ]
     in
-        div [] <|
+        ul [] <|
             List.map viewItem model.exercises
 
 
@@ -121,7 +147,7 @@ viewHeader headerText =
 viewTabBar : Model -> Html Msg
 viewTabBar model =
     div []
-        [ viewTab "Övningar" Exercises model.currentPage
+        [ viewTab "Övningar" ExerciseList model.currentPage
         , viewTab "Pass" Workouts model.currentPage
         , viewTab "Stoppur" StopWatch model.currentPage
         ]
